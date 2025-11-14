@@ -1,27 +1,10 @@
-import Fastify from 'fastify';
+import Fastify from "fastify";
+import userRoutes from "./routes/useRoutes";
 
-import { env } from './config/env';
-import { logger } from './config/logger';
-import { registerRoutes } from './routes';
+const app = Fastify({ logger: true });
 
-export const buildApp = () => {
-  const app = Fastify({
-    logger: true
-  });
+app.register(userRoutes, { prefix: "/api" });
 
-  app.decorate('config', env);
+export default app;
 
-  registerRoutes(app);
-
-  app.setErrorHandler((error, request, reply) => {
-    request.log.error({ err: error }, 'Erro interno no servidor');
-    reply.status(error.statusCode ?? 500).send({
-      message: 'Erro interno do servidor'
-    });
-  });
-
-  return app;
-};
-
-export type AppInstance = ReturnType<typeof buildApp>;
 

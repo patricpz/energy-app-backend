@@ -68,3 +68,4 @@ Thumbs.db
 # Local development
 .vercel
 .next
+/src/generated/prisma
