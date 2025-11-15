@@ -1,11 +1,6 @@
 import { userRepository } from "../repositories/userRepository";
 import bcrypt from "bcrypt";
-
-interface CreateUserDTO {
-  name: string;
-  email: string;
-  password: string;
-}
+import { CreateUserDTO } from "../dtos/createUserDTO";
 
 export const userService = {
   createUser: async ({ name, email, password }: CreateUserDTO) => {

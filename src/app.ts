@@ -1,10 +1,21 @@
-import Fastify from "fastify";
-import userRoutes from "./routes/useRoutes";
+import Fastify from 'fastify';
 
-const app = Fastify({ logger: true });
+import { env } from './config/env';
+import { registerRoutes } from './routes';
 
-app.register(userRoutes, { prefix: "/api" });
+export const buildApp = async () => {
+  const app = Fastify({
+    logger: true,
+  });
 
-export default app;
+  app.decorate('config', env);
 
+  // Rota simples para teste no navegador
+  app.get('/', () => {
+    return { message: 'hello' };
+  });
 
+  await registerRoutes(app);
+
+  return app;
+};
