@@ -16,7 +16,21 @@ const createUserSchema = {
   },
 };
 
+const loginUserSchema = {
+  schema: {
+    body: {
+      type: 'object',
+      required: ['email', 'password'],
+      properties: {
+        email: { type: 'string', format: 'email' },
+        password: { type: 'string', minLength: 6 },
+      },
+    },
+  },
+};
+
 export default async function userRoutes(app: FastifyInstance) {
   app.post('/users', { ...createUserSchema }, userController.create);
   app.get('/users', userController.list);
+  app.post('/users/login', { ...loginUserSchema }, userController.login);
 }
