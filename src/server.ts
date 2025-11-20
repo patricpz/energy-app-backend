@@ -1,8 +1,10 @@
 import { buildApp } from './app';
+import mqttPlugin from "./plugins/mqttClient";
 
 const start = async () => {
   try {
     const app = await buildApp();
+    app.register(mqttPlugin);
     await app.listen({ port: 3020, host: 'localhost' });
 
     console.log('Servidor rodando em:  http://localhost:3020');

@@ -32,6 +32,7 @@
     "fastify": "^4.28.0",
     "fastify-plugin": "^4.5.0",
     "jsonwebtoken": "^9.0.2",
+    "mqtt": "^5.14.1",
     "pino": "^9.4.0",
     "zod": "^3.23.8"
   },
