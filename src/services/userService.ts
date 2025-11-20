@@ -15,6 +15,7 @@ export const userService = {
       name,
       email,
       password: hashed,
+      addressId: null,
     });
   },
 
