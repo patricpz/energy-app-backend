@@ -20,4 +20,18 @@ model User {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
+  addressId Int?
+  address   Address? @relation(fields: [addressId], references: [id])
+}
+
+model Address {
+  id         Int     @id @default(autoincrement())
+  state      String  @db.Char(2)
+  city       String
+  zipCode    String  @db.VarChar(9)
+  district   String
+  street     String
+  number     String
+  complement String?
+  users      User[]
 }
