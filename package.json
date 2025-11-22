@@ -26,6 +26,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@fastify/websocket": "^8.3.1",
     "@prisma/client": "^6.19.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^16.4.5",
