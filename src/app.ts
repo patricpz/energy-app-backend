@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import websocket from '@fastify/websocket';
 
 import { env } from './config/env';
 import { registerRoutes } from './routes';
@@ -9,6 +10,20 @@ export const buildApp = async () => {
   });
 
   app.decorate('config', env);
+
+  // Isso habilita a tecnologia de "tempo real" no servidor
+  app.register(websocket);
+
+  // O App vai conectar em: ws://localhost:3020/ws
+  app.register(async function (fastify) {
+    fastify.get('/ws', { websocket: true }, (connection: any, req) => {
+      console.log('App conectado no WebSocket!');
+
+      connection.socket.on('close', () => {
+        console.log('App desconectou.');
+      });
+    });
+  });
 
   // Rota simples para teste no navegador
   app.get('/', () => {
