@@ -3,19 +3,36 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { CreateUserDTO } from "../dtos/createUserDTO";
 import { LoginUserDTO } from "../dtos/loginUserDTO";
+import { addressRepository } from "../repositories/addressRepository";
 
 export const userService = {
-  createUser: async ({ name, email, password }: CreateUserDTO) => {
+  createUser: async ({ name, email, password, address }: CreateUserDTO) => {
     const exists = await userRepository.findByEmail(email);
     if (exists) throw new Error("Email already registered");
 
     const hashed = await bcrypt.hash(password, 10);
 
+    let addressId: number | null = null;
+
+    if (address) {
+      const newAddress = await addressRepository.create({
+        state: address.state,
+        city: address.city,
+        zipCode: address.zipCode,
+        district: address.district,
+        street: address.street,
+        number: address.number,
+        complement: address.complement,
+      })
+
+      addressId = newAddress.id
+    }
+
     return userRepository.create({
       name,
       email,
       password: hashed,
-      addressId: null,
+      addressId,
     });
   },
 
