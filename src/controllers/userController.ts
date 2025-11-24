@@ -23,6 +23,15 @@ export const userController = {
     }
   },
 
+  findById: async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    try {
+      const user = await userService.findUser(Number(req.params.id));
+      return reply.code(200).send(user);
+    } catch (err: any) {
+      return reply.code(404).send({ error: err.message })
+    }
+  },
+
   login: async (req: FastifyRequest<{ Body: LoginUserDTO }>, reply: FastifyReply) => {
     try {
       const result = await userService.login(req.body);

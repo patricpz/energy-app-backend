@@ -38,6 +38,16 @@ export const userService = {
 
   listUsers: () => userRepository.findAll(),
 
+  findUser: async (id: number) => {
+    const user = await userRepository.findById(id);
+
+    if (!user) {
+      throw new Error("usuário não encontrado!");
+    }
+
+    return user;
+  },
+
   login: async ({ email, password }: LoginUserDTO) => {
     const user = await userRepository.findByEmail(email);
 
