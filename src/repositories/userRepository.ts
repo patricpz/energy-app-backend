@@ -17,4 +17,26 @@ export const userRepository = {
       }
     });
   },
+
+  update: (id: number, data: any) => {
+    const {address, ...userData} = data;
+
+    return prisma.user.update({
+      where: { id },
+      data: {
+        ...userData,
+        address: address
+        ? {
+            upsert: {
+              create: address,
+              update: address,
+            }
+          }
+        : undefined
+      },
+      include: {
+        address: true,
+      }
+    });
+  }
 };
