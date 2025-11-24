@@ -33,5 +33,6 @@ export default async function userRoutes(app: FastifyInstance) {
   app.post('/users', { ...createUserSchema }, userController.create);
   app.get('/users', userController.list);
   app.get('/users/:id', userController.findById);
+  app.put('/users/:id', userController.update);
   app.post('/users/login', { ...loginUserSchema }, userController.login);
 }

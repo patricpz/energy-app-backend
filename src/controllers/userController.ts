@@ -14,6 +14,18 @@ export const userController = {
     }
   },
 
+  update: async (
+    req: FastifyRequest<{ Params: { id: string }, Body: any }>,
+    reply: FastifyReply
+  ) => {
+    try {
+      const updated = await userService.update(Number(req.params.id), req.body);
+      return reply.code(200).send(updated);
+    } catch (err: any) {
+      return reply.code(400).send({ error: err.message })
+    }
+  },
+
   list: async (_: FastifyRequest, reply: FastifyReply) => {
     try {
       const users = await userService.listUsers();

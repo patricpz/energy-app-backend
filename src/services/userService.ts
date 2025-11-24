@@ -48,6 +48,31 @@ export const userService = {
     return user;
   },
 
+  update: async (id: number, data: any) => {
+    const { password, email, ...rest } = data;
+
+    let hashedPassword = undefined;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
+    if (email) {
+      const existing = await userRepository.findByEmail(email);
+      if (existing && existing.id !== id) {
+        throw new Error("E-mail já está cadastrado");
+      }
+    }
+
+    const updateData: any = {
+      ...rest,
+    };
+
+    if (email) updateData.email = email;
+    if (hashedPassword) updateData.password = hashedPassword;
+
+    return userRepository.update(id, updateData);
+  },
+
   login: async ({ email, password }: LoginUserDTO) => {
     const user = await userRepository.findByEmail(email);
 
