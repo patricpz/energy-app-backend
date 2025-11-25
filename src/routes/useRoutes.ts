@@ -34,5 +34,6 @@ export default async function userRoutes(app: FastifyInstance) {
   app.get('/users', userController.list);
   app.get('/users/:id', userController.findById);
   app.put('/users/:id', userController.update);
+  app.delete('/users/:id', userController.delete);
   app.post('/users/login', { ...loginUserSchema }, userController.login);
 }

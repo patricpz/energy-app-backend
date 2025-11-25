@@ -11,6 +11,7 @@ export const addressRepository = {
         street: string;
         number: string;
         complement?: string;
+        userId: number;
       }) => {
         return prisma.address.create({
             data,

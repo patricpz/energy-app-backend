@@ -26,6 +26,15 @@ export const userController = {
     }
   },
 
+  delete: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      await userService.delete(Number((req.params as any).id));
+      return reply.code(200).send({message: "Usuário deletado"});
+    } catch (err: any) {
+      return reply.code(400).send({ error: err.message })
+    }
+  },
+
   list: async (_: FastifyRequest, reply: FastifyReply) => {
     try {
       const users = await userService.listUsers();
