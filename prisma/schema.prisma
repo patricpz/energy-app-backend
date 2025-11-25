@@ -20,8 +20,7 @@ model User {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
-  addressId Int?
-  address   Address? @relation(fields: [addressId], references: [id])
+  address   Address?
 }
 
 model Address {
@@ -33,5 +32,6 @@ model Address {
   street     String
   number     String
   complement String?
-  users      User[]
+  user       User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int?     @unique
 }

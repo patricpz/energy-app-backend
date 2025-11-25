@@ -12,10 +12,14 @@ export const userService = {
 
     const hashed = await bcrypt.hash(password, 10);
 
-    let addressId: number | null = null;
+    const newUser = await userRepository.create({
+      name,
+      email,
+      password: hashed,
+    });
 
     if (address) {
-      const newAddress = await addressRepository.create({
+      await addressRepository.create({
         state: address.state,
         city: address.city,
         zipCode: address.zipCode,
@@ -23,17 +27,12 @@ export const userService = {
         street: address.street,
         number: address.number,
         complement: address.complement,
+        userId: newUser.id,
       })
 
-      addressId = newAddress.id
     }
 
-    return userRepository.create({
-      name,
-      email,
-      password: hashed,
-      addressId,
-    });
+    return newUser;
   },
 
   listUsers: () => userRepository.findAll(),
@@ -71,6 +70,16 @@ export const userService = {
     if (hashedPassword) updateData.password = hashedPassword;
 
     return userRepository.update(id, updateData);
+  },
+
+  delete: async (id: number) => {
+    const user = await userRepository.findById(id);
+
+    if (!user) {
+      throw new Error("Usuário não encontrado");
+    }
+
+    return userRepository.delete(id);
   },
 
   login: async ({ email, password }: LoginUserDTO) => {
