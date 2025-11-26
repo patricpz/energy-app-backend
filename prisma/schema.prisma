@@ -21,6 +21,8 @@ model User {
   password  String
   createdAt DateTime @default(now())
   address   Address?
+
+  energyYears EnergyYear[]
 }
 
 model Address {
@@ -32,6 +34,59 @@ model Address {
   street     String
   number     String
   complement String?
-  user       User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     Int?     @unique
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int     @unique
+}
+
+model EnergyYear {
+  id         Int    @id @default(autoincrement())
+  year       Int
+  expenseKwh Float?
+  account    Float?
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+
+  months EnergyMonth[]
+
+  @@unique([userId, year])
+}
+
+model EnergyMonth {
+  id         Int    @id @default(autoincrement())
+  month      Int
+  expenseKwh Float?
+  account    Float?
+  pulse      Int?
+
+  year   EnergyYear @relation(fields: [yearId], references: [id], onDelete: Cascade)
+  yearId Int
+
+  days EnergyDay[]
+
+  @@unique([yearId, month])
+}
+
+model EnergyDay {
+  id       Int         @id @default(autoincrement())
+  day      Int
+  totalKwh Float?
+  account  Float?
+  pulse    Int?
+  month    EnergyMonth @relation(fields: [monthId], references: [id], onDelete: Cascade)
+  monthId  Int
+
+  hours EnergyHour[]
+
+  @@unique([monthId, day])
+}
+
+model EnergyHour {
+  id       Int       @id @default(autoincrement())
+  hour     Int
+  totalKwh Float?
+  pulse    Int?
+  day      EnergyDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  dayId    Int
+
+  @@unique([dayId, hour])
 }
