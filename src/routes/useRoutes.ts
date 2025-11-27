@@ -31,9 +31,9 @@ const loginUserSchema = {
 
 export default async function userRoutes(app: FastifyInstance) {
   app.post('/users', { ...createUserSchema }, userController.create);
-  app.get('/users', userController.list);
-  app.get('/users/:id', userController.findById);
-  app.put('/users/:id', userController.update);
-  app.delete('/users/:id', userController.delete);
+  app.get('/users', { preHandler: [app.authenticate] }, userController.list);
+  app.get('/users/:id', { preHandler: [app.authenticate] }, userController.findById);
+  app.put('/users/:id', { preHandler: [app.authenticate] }, userController.update);
+  app.delete('/users/:id', { preHandler: [app.authenticate] }, userController.delete);
   app.post('/users/login', { ...loginUserSchema }, userController.login);
 }
