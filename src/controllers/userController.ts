@@ -19,7 +19,14 @@ export const userController = {
     reply: FastifyReply
   ) => {
     try {
-      const updated = await userService.update(Number(req.params.id), req.body);
+      const id = Number((req.params as any).id);
+      const loggerId = (req.user as any).userId;
+
+      if (id !== loggerId) {
+        return reply.code(403).send({ error: "Unauthorized action" })
+      }
+
+      const updated = await userService.update(id, req.body);
       return reply.code(200).send(updated);
     } catch (err: any) {
       return reply.code(400).send({ error: err.message })
@@ -28,8 +35,15 @@ export const userController = {
 
   delete: async (req: FastifyRequest, reply: FastifyReply) => {
     try {
-      await userService.delete(Number((req.params as any).id));
-      return reply.code(200).send({message: "Usuário deletado"});
+      const id = Number((req.params as any).id);
+      const loggerId = (req.user as any).userId;
+
+      if (id !== loggerId) {
+        return reply.code(403).send({ error: "Unauthorized action" })
+      }
+
+      await userService.delete(id);
+      return reply.code(200).send({message: "Delected user"});
     } catch (err: any) {
       return reply.code(400).send({ error: err.message })
     }
@@ -46,7 +60,14 @@ export const userController = {
 
   findById: async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     try {
-      const user = await userService.findUser(Number(req.params.id));
+      const id = Number((req.params as any).id);
+      const loggerId = (req.user as any).userId;
+
+      if (id !== loggerId) {
+        return reply.code(403).send({ error: "Unauthorized action" })
+      }
+      
+      const user = await userService.findUser(id);
       return reply.code(200).send(user);
     } catch (err: any) {
       return reply.code(404).send({ error: err.message })
