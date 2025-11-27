@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
+import authPlugin from './plugins/authPlugin';
 
 import { env } from './config/env';
 import { registerRoutes } from './routes';
@@ -13,6 +14,8 @@ export const buildApp = async () => {
 
   // Isso habilita a tecnologia de "tempo real" no servidor
   app.register(websocket);
+
+  app.register(authPlugin);
 
   // O App vai conectar em: ws://localhost:3020/ws
   app.register(async function (fastify) {
