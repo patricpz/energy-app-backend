@@ -15,12 +15,13 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  address   Address?
+  id               Int      @id @default(autoincrement())
+  name             String
+  email            String   @unique
+  password         String
+  createdAt        DateTime @default(now())
+  constantMedidor  Int?
+  address          Address?
 
   energyYears EnergyYear[]
 }
@@ -43,6 +44,8 @@ model EnergyYear {
   year       Int
   expenseKwh Float?
   account    Float?
+  pulse      Int?
+
   user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
 
@@ -67,13 +70,14 @@ model EnergyMonth {
 }
 
 model EnergyDay {
-  id       Int         @id @default(autoincrement())
-  day      Int
-  totalKwh Float?
-  account  Float?
-  pulse    Int?
-  month    EnergyMonth @relation(fields: [monthId], references: [id], onDelete: Cascade)
-  monthId  Int
+  id         Int         @id @default(autoincrement())
+  day        Int
+  expenseKwh Float?
+  account    Float?
+  pulse      Int?
+
+  month      EnergyMonth @relation(fields: [monthId], references: [id], onDelete: Cascade)
+  monthId    Int
 
   hours EnergyHour[]
 
@@ -81,12 +85,14 @@ model EnergyDay {
 }
 
 model EnergyHour {
-  id       Int       @id @default(autoincrement())
-  hour     Int
-  totalKwh Float?
-  pulse    Int?
-  day      EnergyDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
-  dayId    Int
+  id         Int       @id @default(autoincrement())
+  hour       Int
+  expenseKwh Float?
+  account    Float?
+  pulse      Int?
+
+  day        EnergyDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  dayId      Int
 
   @@unique([dayId, hour])
 }
