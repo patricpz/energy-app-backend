@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 
 import { userController } from '../controllers/userController';
+import { energyController } from '../controllers/energyController';
 
 const createUserSchema = {
   schema: {
@@ -36,4 +37,9 @@ export default async function userRoutes(app: FastifyInstance) {
   app.put('/users/:id', { preHandler: [app.authenticate] }, userController.update);
   app.delete('/users/:id', { preHandler: [app.authenticate] }, userController.delete);
   app.post('/users/login', { ...loginUserSchema }, userController.login);
+
+  app.get('/users/:userId/energyHours', { preHandler: [app.authenticate] }, energyController.listHours);
+  app.get('/users/:userId/energyDays', { preHandler: [app.authenticate] }, energyController.listDays);
+  app.get('/users/:userId/energyMonths', { preHandler: [app.authenticate] }, energyController.listMonths);
+  app.get('/users/:userId/energyYears', { preHandler: [app.authenticate] }, energyController.listYears);
 }

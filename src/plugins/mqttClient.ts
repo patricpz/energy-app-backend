@@ -1,3 +1,4 @@
+import { energyService } from "../services/energyService";
 import fp from "fastify-plugin"
 import mqtt from "mqtt"
 
@@ -23,7 +24,19 @@ export default fp(async (fastify: any) => {
         console.log("Erro MQTT: ", err);
     })
 
-    client.subscribe("foo/bar");
+    client.subscribe("esp/api");
+
+    client.on("message", async (topic, payload) => {
+      try {
+        const mqttMessage = JSON.parse(payload.toString());
+        const userId = mqttMessage.userId
+
+        await energyService.registerPulse(userId);
+        console.log("pulso registrado");
+      } catch (e) {
+        console.log(`erro: ${e}`);
+      }
+    })
 
     client.on("message", (topic, payload) => {
         const mensagem = payload.toString();
