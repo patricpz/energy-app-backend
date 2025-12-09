@@ -26,8 +26,8 @@
             return watts;
         },  
 
-        async registerPulse(userId: number) {
-            const now = new Date();
+        async registerPulse(userId: number, timestamp?: string) {
+            const now = timestamp ? new Date(timestamp) : new Date();
 
             const year = now.getFullYear();
             const month = now.getMonth() + 1;

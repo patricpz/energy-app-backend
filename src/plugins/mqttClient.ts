@@ -30,8 +30,9 @@ export default fp(async (fastify: any) => {
       try {
         const mqttMessage = JSON.parse(payload.toString());
         const userId = mqttMessage.userId
+        const mqqtTimestamp = mqttMessage.timestamp
 
-        await energyService.registerPulse(userId);
+        await energyService.registerPulse(userId, mqqtTimestamp);
         console.log("pulso registrado");
       } catch (e) {
         console.log(`erro: ${e}`);
