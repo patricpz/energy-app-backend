@@ -3,6 +3,8 @@ import { FastifyInstance } from 'fastify';
 import { userController } from '../controllers/userController';
 import { energyController } from '../controllers/energyController';
 
+import { domesticEquipamentController } from '../controllers/domesticEquipamentController';
+
 const createUserSchema = {
   schema: {
     body: {
@@ -30,6 +32,15 @@ const loginUserSchema = {
   },
 };
 
+const domesticEquipamentSchema = {
+  schema: {
+    body: {
+      type: 'object',
+      required: ['name', 'consumeKwh'],
+    }
+  }
+}
+
 export default async function userRoutes(app: FastifyInstance) {
   app.post('/users', { ...createUserSchema }, userController.create);
   app.get('/users', { preHandler: [app.authenticate] }, userController.list);
@@ -42,4 +53,6 @@ export default async function userRoutes(app: FastifyInstance) {
   app.get('/users/:userId/energyDays', { preHandler: [app.authenticate] }, energyController.listDays);
   app.get('/users/:userId/energyMonths', { preHandler: [app.authenticate] }, energyController.listMonths);
   app.get('/users/:userId/energyYears', { preHandler: [app.authenticate] }, energyController.listYears);
+
+  app.post('/users/:userId/domesticEquipament', { preHandler: [app.authenticate], ...domesticEquipamentSchema}, domesticEquipamentController.create);
 }

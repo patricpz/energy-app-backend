@@ -43,11 +43,13 @@ model Address {
 }
 
 model DomesticEquipament {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
+  name       String
+  model      String?
   consumeKwh Float
-  active     Boolean
+  active     Boolean?
 
-  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
 }
 
