@@ -9,4 +9,8 @@ export const domesticEquipamentService = {
             model
         )
     },
+
+    list: async (userId: number) => {
+        return await domesticEquipamentRepository.findByUser(userId);
+    }
 }

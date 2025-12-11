@@ -8,4 +8,8 @@ export const domesticEquipamentRepository = {
             data: { userId, name, consumeKwh, model }
         })
     },
+
+    findByUser: (userId: number) => {
+        return prisma.domesticEquipament.findMany({ where: { userId: userId } });
+    }
 }
