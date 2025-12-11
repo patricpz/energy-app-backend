@@ -55,4 +55,5 @@ export default async function userRoutes(app: FastifyInstance) {
   app.get('/users/:userId/energyYears', { preHandler: [app.authenticate] }, energyController.listYears);
 
   app.post('/users/:userId/domesticEquipament', { preHandler: [app.authenticate], ...domesticEquipamentSchema}, domesticEquipamentController.create);
+  app.get('/users/:userId/domesticEquipament', { preHandler: [app.authenticate] }, domesticEquipamentController.list);
 }
