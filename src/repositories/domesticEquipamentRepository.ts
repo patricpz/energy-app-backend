@@ -13,7 +13,22 @@ export const domesticEquipamentRepository = {
         return prisma.domesticEquipament.findMany({ where: { userId: userId } });
     },
 
-    findById: (id: number) => {
-        return prisma.domesticEquipament.findUnique({ where: { id } });
+    findById: (id: number, userId: number) => {
+        return prisma.domesticEquipament.findFirst({ where: { id, userId } });
+    }, 
+
+    update: (id: number, userId: number, data: any) => {
+        return prisma.domesticEquipament.update({
+            where: { id, userId },
+            data: {
+                name: data.name,
+                consumeKwh: data.consumeKwh,
+                model: data.model
+            }
+        })
+    },
+
+    delete: (id: number, userId: number) => {
+        return prisma.domesticEquipament.delete({ where: { id, userId } });
     }
 }

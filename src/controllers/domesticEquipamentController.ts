@@ -9,16 +9,10 @@ export const domesticEquipamentController = {
         reply: FastifyReply
     ) => {
         try {
-            const { name, consumeKwh, model } = req.body;
-            const userId = Number(req.params.userId);
-            const loggerUser = (req.user as any).userId;
-
-            if (userId !== loggerUser) {
-                return reply.code(403).send("Unauthorized action");
-            }
-
+            const { name, consumeKwh, model } = req.body
             const newEuipament = await domesticEquipamentService.createEquipament(
-                userId,
+                Number(req.params.userId),
+                (req.user as any).userId,
                 name, 
                 consumeKwh,
                 model
@@ -31,28 +25,54 @@ export const domesticEquipamentController = {
     },
 
     listEquipaments: async (req: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply) => {
-        const userId = Number(req.params.userId);
-        const loggerUserId = (req.user as any).userId;
-        if (userId !== loggerUserId) {
-            return reply.code(403).send("Unauthorized action");
+        try {
+            const equipaments = await domesticEquipamentService.listEquipament(
+                Number(req.params.userId),
+                (req.user as any).userId
+            );
+            return reply.code(201).send(equipaments);
+        } catch (err: any) {
+            return reply.code(400).send({ error: err.message });
         }
-
-        const equipaments = await domesticEquipamentService.listEquipament(userId);
-        return reply.code(201).send(equipaments);
     },
 
     findEquipament: async (req: FastifyRequest, reply: FastifyReply) => {
-        const userId = Number((req.params as any).userId);
-        const id = Number((req.params as any).id);
-        const equipament = await domesticEquipamentService.findEquipament(id);
-
-        if (!equipament) {
-            return reply.code(404).send({ error: "Not found" });
+        try {
+            const equipament = await domesticEquipamentService.findEquipament(
+                Number((req.params as any).id),
+                Number((req.params as any).userId),
+                (req.user as any).userId
+            );
+            return reply.code(201).send(equipament);
+        } catch (err: any) {
+            return reply.code(400).send({ error: err.message });
         }
-        if (equipament.userId !== userId) {
-            return reply.code(403).send({ error: "Unauthorized action" });
-        }
+    },
 
-        return reply.code(201).send(equipament);
+    updateEquipament: async (req: FastifyRequest, reply: FastifyReply) => {
+        try {
+            const equipament = await domesticEquipamentService.updateEquipament(
+                Number((req.params as any).id),
+                Number((req.params as any).userId),
+                (req.user as any).userId,
+                req.body
+            )
+            return reply.code(201).send(equipament);
+        } catch (err: any) {
+            return reply.code(400).send({ error: err.message });
+        }
+    },
+
+    deleteEquipament: async (req: FastifyRequest, reply: FastifyReply) => {
+        try {
+            await domesticEquipamentService.deleteEquipament(
+                Number((req.params as any).id),
+                Number((req.params as any).userId),
+                (req.user as any).userId
+            );
+            return reply.code(200).send({message: "Delected user"});
+        } catch (err: any) {
+            return reply.code(400).send({ error: err.message });
+        }
     }
 }
