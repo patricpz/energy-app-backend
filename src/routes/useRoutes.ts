@@ -57,4 +57,6 @@ export default async function userRoutes(app: FastifyInstance) {
   app.post('/users/:userId/domesticEquipaments', { preHandler: [app.authenticate], ...domesticEquipamentSchema}, domesticEquipamentController.createEquipament);
   app.get('/users/:userId/domesticEquipaments', { preHandler: [app.authenticate] }, domesticEquipamentController.listEquipaments);
   app.get('/users/:userId/domesticEquipaments/:id', { preHandler: [app.authenticate] }, domesticEquipamentController.findEquipament)
+  app.put('/users/:userId/domesticEquipaments/:id', { preHandler: [app.authenticate] }, domesticEquipamentController.updateEquipament);
+  app.delete('/users/:userId/domesticEquipaments/:id', { preHandler: [app.authenticate] }, domesticEquipamentController.deleteEquipament);
 }
