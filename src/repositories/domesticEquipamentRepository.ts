@@ -9,7 +9,11 @@ export const domesticEquipamentRepository = {
         })
     },
 
-    findByUser: (userId: number) => {
+    findAllByUser: (userId: number) => {
         return prisma.domesticEquipament.findMany({ where: { userId: userId } });
+    },
+
+    findById: (id: number) => {
+        return prisma.domesticEquipament.findUnique({ where: { id } });
     }
 }

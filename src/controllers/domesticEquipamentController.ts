@@ -4,7 +4,7 @@ import { domesticEquipamentService } from '../services/domesticEquipamentService
 import { DomesticEquipamentDTO } from 'dtos/domesticEquipamentDTO';
 
 export const domesticEquipamentController = {
-    create: async (
+    createEquipament: async (
         req: FastifyRequest<{ Body: DomesticEquipamentDTO, Params: { userId: string } }>, 
         reply: FastifyReply
     ) => {
@@ -17,7 +17,7 @@ export const domesticEquipamentController = {
                 return reply.code(403).send("Unauthorized action");
             }
 
-            const newEuipament = await domesticEquipamentService.create(
+            const newEuipament = await domesticEquipamentService.createEquipament(
                 userId,
                 name, 
                 consumeKwh,
@@ -30,14 +30,29 @@ export const domesticEquipamentController = {
         }
     },
 
-    list: async (req: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply) => {
+    listEquipaments: async (req: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply) => {
         const userId = Number(req.params.userId);
         const loggerUserId = (req.user as any).userId;
         if (userId !== loggerUserId) {
             return reply.code(403).send("Unauthorized action");
         }
 
-        const equipaments = await domesticEquipamentService.list(userId);
+        const equipaments = await domesticEquipamentService.listEquipament(userId);
         return reply.code(201).send(equipaments);
+    },
+
+    findEquipament: async (req: FastifyRequest, reply: FastifyReply) => {
+        const userId = Number((req.params as any).userId);
+        const id = Number((req.params as any).id);
+        const equipament = await domesticEquipamentService.findEquipament(id);
+
+        if (!equipament) {
+            return reply.code(404).send({ error: "Not found" });
+        }
+        if (equipament.userId !== userId) {
+            return reply.code(403).send({ error: "Unauthorized action" });
+        }
+
+        return reply.code(201).send(equipament);
     }
 }
