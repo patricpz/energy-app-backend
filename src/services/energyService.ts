@@ -54,11 +54,11 @@
             return updatedHour;
         },
 
-        listEnergyHours: (userId: number) => energyHourRepository.findAllByUser(userId),
+        listEnergyHours: (userId: number, yearId: number, monthId: number, dayId: number) => energyHourRepository.findAllByUser(userId, yearId, monthId, dayId),
 
-        listEnergyDays: (userId: number) => energyDayRepository.findAllByUser(userId),
+        listEnergyDays: (userId: number, yearId: number, monthId: number) => energyDayRepository.findAllByUser(userId, yearId, monthId),
 
-        listEnergyMonths: (userId: number) => energyMonthRepository.findAllByUser(userId),
+        listEnergyMonths: (userId: number, yearId: number) => energyMonthRepository.findAllByUser(userId, yearId),
         
         listEnergyYears: (userId: number) => energyYearRepository.findAllByUser(userId),
     }
