@@ -112,3 +112,11 @@ model EnergyHour {
 
   @@unique([dayId, hour])
 }
+
+model EnergyDistributor {
+  id    Int    @id @default(autoincrement())
+  code  String
+  name  String
+  state String @db.Char(2)
+  city  String
+}
