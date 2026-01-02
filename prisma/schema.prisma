@@ -21,6 +21,8 @@ model User {
   password            String
   createdAt           DateTime             @default(now())
   constantMedidor     Int?
+  ruralZone           Boolean              @default(false)
+  whiteFare           Boolean              @default(false)
 
   address             Address?
 
