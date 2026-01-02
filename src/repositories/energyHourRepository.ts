@@ -3,11 +3,14 @@ import { PrismaClient } from "../generated/prisma/client";
 const prisma = new PrismaClient();
 
 export const energyHourRepository = {
-    findAllByUser: (userId: number) => {
+    findAllByUser: (userId: number, yearId: number, monthId: number, dayId: number) => {
         return prisma.energyHour.findMany({
             where: {
+                dayId: dayId,
                 day: {
+                    monthId: monthId,
                     month: {
+                        yearId: yearId,
                         year: {
                             userId: userId
                         }
