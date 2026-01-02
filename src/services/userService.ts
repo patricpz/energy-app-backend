@@ -6,7 +6,7 @@ import { LoginUserDTO } from "../dtos/loginUserDTO";
 import { addressRepository } from "../repositories/addressRepository";
 
 export const userService = {
-  createUser: async ({ name, email, password, address, constantMedidor }: CreateUserDTO) => {
+  createUser: async ({ name, email, password, address, constantMedidor, ruralZone, whiteFare }: CreateUserDTO) => {
     const exists = await userRepository.findByEmail(email);
     if (exists) throw new Error("Email already registered");
 
@@ -17,6 +17,8 @@ export const userService = {
       email,
       password: hashed,
       constantMedidor,
+      ruralZone: ruralZone ?? false,
+      whiteFare: whiteFare ?? false,
     });
 
     if (address) {

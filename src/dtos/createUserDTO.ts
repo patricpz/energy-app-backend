@@ -3,6 +3,8 @@ export interface CreateUserDTO {
   email: string;
   password: string;
   constantMedidor: number;
+  ruralZone?: boolean;
+  whiteFare?: boolean;
   address?: {
     state: string;
     city: string;
