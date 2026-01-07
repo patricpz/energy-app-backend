@@ -115,8 +115,8 @@ model EnergyHour {
 
 model EnergyDistributor {
   id    Int    @id @default(autoincrement())
-  code  String
+  code  String @unique
   name  String
   state String @db.Char(2)
-  city  String
+  cnpj  String
 }
