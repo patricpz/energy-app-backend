@@ -9,12 +9,13 @@ export const domesticEquipamentController = {
         reply: FastifyReply
     ) => {
         try {
-            const { name, consumeKwh, model } = req.body
+            const { name, consumeKwh, power, model } = req.body
             const newEuipament = await domesticEquipamentService.createEquipament(
                 Number(req.params.userId),
                 (req.user as any).userId,
                 name, 
                 consumeKwh,
+                power,
                 model
             );
 

@@ -5,7 +5,8 @@ export const domesticEquipamentService = {
         userId: number, 
         loggerUserId: number,
         name: string, 
-        consumeKwh: number, 
+        consumeKwh: number,
+        power: number, 
         model?: string
     ) => {
         if (userId !== loggerUserId) {
@@ -16,6 +17,7 @@ export const domesticEquipamentService = {
             userId,
             name,
             consumeKwh,
+            power,
             model
         )
     },

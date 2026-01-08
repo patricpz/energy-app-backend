@@ -36,7 +36,13 @@ const domesticEquipamentSchema = {
   schema: {
     body: {
       type: 'object',
-      required: ['name', 'consumeKwh'],
+      required: ['name', 'consumeKwh', 'power'],
+      properties: {
+        name: { type: 'string' },
+        consumeKwh: { type: 'number' },
+        power: { type: 'number' },
+        model: { type: 'string' }
+      }
     }
   }
 }
