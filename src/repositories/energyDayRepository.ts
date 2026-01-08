@@ -3,17 +3,24 @@ import { PrismaClient } from "../generated/prisma/client";
 const prisma = new PrismaClient();
 
 export const energyDayRepository = {
-    findAllByUser: (userId: number, yearId: number, monthId: number) => {
+    findAllByUser: async (userId: number, year: number, month: number) => {
+        const energyYear = await prisma.energyYear.findUnique({
+            where: { userId_year: { userId, year } },
+            select: { id: true }
+        });
+
+        if (!energyYear) throw new Error("Year not found");
+        
+        const energyMonth = await prisma.energyMonth.findUnique({
+            where: { yearId_month: { yearId: energyYear.id, month } },
+            select: { id: true }
+        });
+
+        if (!energyMonth) throw new Error("Month not found");
+
         return prisma.energyDay.findMany({
-            where: {
-                monthId: monthId,
-                month: {
-                    yearId: yearId,
-                    year: {
-                        userId: userId
-                    }
-                }
-            }
+            where: { monthId: energyMonth.id },
+            orderBy: { day: "asc" }
         });
     },
 

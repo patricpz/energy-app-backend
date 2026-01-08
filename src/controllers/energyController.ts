@@ -6,24 +6,24 @@ export const energyController = {
     listHours: async (
         req: FastifyRequest<{ Params: { 
             userId: string, 
-            yearId: string, 
-            monthId: string, 
-            dayId: string 
+            year: string, 
+            month: string, 
+            day: string 
         } }>, 
         reply: FastifyReply) => {
         try {
             const userId = Number(req.params.userId);
             const loggerId = (req.user as any).userId;
 
-            const yearId = Number(req.params.yearId);
-            const monthId = Number(req.params.monthId);
-            const dayId = Number(req.params.dayId)
+            const year = Number(req.params.year);
+            const month = Number(req.params.month);
+            const day = Number(req.params.day)
 
             if (userId !== loggerId) {
                 return reply.code(403).send({ error: "Unauthorized action" })
             }
 
-            const hours = await energyService.listEnergyHours(userId, yearId, monthId, dayId);
+            const hours = await energyService.listEnergyHours(userId, year, month, day);
             return reply.send(hours);
         } catch (err: any) {
             return reply.code(500).send({ error: err.message });
@@ -33,8 +33,8 @@ export const energyController = {
     listDays: async (
         req: FastifyRequest<{ Params: { 
             userId: string, 
-            yearId: string, 
-            monthId: string 
+            year: string, 
+            month: string 
         } }>, 
         reply: FastifyReply
     ) => {
@@ -42,14 +42,14 @@ export const energyController = {
             const userId = Number(req.params.userId);
             const loggerId = (req.user as any).userId;
 
-            const yearId = Number(req.params.yearId);
-            const monthId = Number(req.params.monthId);
+            const year = Number(req.params.year);
+            const month = Number(req.params.month);
 
             if (userId !== loggerId) {
                 return reply.code(403).send({ error: "Unauthorized action" })
             }
 
-            const days = await energyService.listEnergyDays(userId, yearId, monthId);
+            const days = await energyService.listEnergyDays(userId, year, month);
             return reply.send(days);
         } catch (err: any) {
             return reply.code(500).send({ error: err.message });
@@ -57,20 +57,20 @@ export const energyController = {
     },
 
     listMonths: async (
-        req: FastifyRequest<{ Params: { userId: string, yearId: string } }>, 
+        req: FastifyRequest<{ Params: { userId: string, year: string } }>, 
         reply: FastifyReply
     ) => {
         try {
             const userId = Number(req.params.userId);
             const loggerId = (req.user as any).userId;
 
-            const yearId = Number(req.params.yearId);
+            const year = Number(req.params.year);
 
             if (userId !== loggerId) {
                 return reply.code(403).send({ error: "Unauthorized action" })
             }
 
-            const months = await energyService.listEnergyMonths(userId, yearId);
+            const months = await energyService.listEnergyMonths(userId, year);
             return reply.send(months);
         } catch (err: any) {
             return reply.code(500).send({ error: err.message });
