@@ -114,9 +114,30 @@ model EnergyHour {
 }
 
 model EnergyDistributor {
-  id    Int    @id @default(autoincrement())
-  code  String @unique
-  name  String
-  state String @db.Char(2)
-  cnpj  String
+  id      Int            @id @default(autoincrement())
+  code    String         @unique
+  name    String
+  state   String         @db.Char(2)
+  cnpj    String
+
+  tariffs EnergyTariff[]
+}
+
+model EnergyTariff {
+  id            Int               @id @default(autoincrement())
+  tusd          Decimal?          @db.Decimal(10,6) 
+  te            Decimal?          @db.Decimal(10,6)
+  reh           String
+  startDate     DateTime
+  endDate       DateTime?
+  modality      String
+  subClass      String?
+  tariffPost    String?
+  createdAt     DateTime          @default(now())
+
+  distributor   EnergyDistributor @relation(fields: [distributorId], references: [id])
+  distributorId Int
+
+  @@index([distributorId, startDate, endDate])
+  @@unique([distributorId, startDate, modality, subClass, tariffPost])
 }
