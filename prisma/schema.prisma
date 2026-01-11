@@ -23,6 +23,7 @@ model User {
   constantMedidor     Int?
   ruralZone           Boolean              @default(false)
   whiteFare           Boolean              @default(false)
+  cipValue            Decimal?             @db.Decimal(10, 2)
 
   address             Address?
 
@@ -71,7 +72,7 @@ model EnergyYear {
 }
 
 model EnergyMonth {
-  id         Int    @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   month      Int
   expenseKwh Float?
   account    Float?
@@ -151,4 +152,16 @@ model TariffFlag {
   createdAt     DateTime @default(now())
 
   @@unique([year, month])
+}
+
+model IcmsRate {
+  id           Int      @id @default(autoincrement())
+  state        String   @db.Char(2)
+  consumerType String
+  minKwh       Float
+  maxKwh       Float?
+  rate         Float
+  createdAt    DateTime @default(now())
+
+  @@index([state, consumerType])
 }
