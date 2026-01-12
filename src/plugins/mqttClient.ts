@@ -85,16 +85,4 @@ export default fp(async (fastify: any) => {
       });
 
     fastify.decorate("mqtt", client);
-
-    // Envia um sinal a cada segundo para testar a conexão
-    setInterval(() => {
-      if (fastify.websocketServer) {
-        fastify.websocketServer.clients.forEach((client: any) => {
-          if (client.readyState === 1) {
-            client.send("pulso"); 
-            console.log("Enviando pulso automático de teste");
-          }
-        });
-      }
-    }, 1000); // 1000ms = 1 segundo  
 });
