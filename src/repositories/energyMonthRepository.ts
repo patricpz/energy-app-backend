@@ -1,4 +1,4 @@
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient, Prisma } from "../generated/prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -17,25 +17,23 @@ export const energyMonthRepository = {
         });
     },
 
-    createOrUpdateMonth: async (yearId: number, month: number, expenseKwh: number) => {
-        let energyMonth = await prisma.energyMonth.findUnique({
-            where: { yearId_month: { yearId, month } }
+    createOrUpdateMonth: async (yearId: number, month: number, expenseKwh: number, account: number) => {
+        return prisma.energyMonth.upsert({
+            where: {
+                yearId_month: { yearId, month }
+            },
+            create: {
+                yearId, 
+                month,
+                pulse: 1,
+                expenseKwh,
+                account: new Prisma.Decimal(account)
+            },
+            update: {
+                pulse: { increment: 1 },
+                expenseKwh: { increment: expenseKwh },
+                account: { increment: new Prisma.Decimal(account) }
+            }
         });
-
-        if (!energyMonth) {
-            energyMonth = await prisma.energyMonth.create({
-                data: { yearId, month, pulse: 1, expenseKwh }
-            });
-        } else {
-            await prisma.energyMonth.update({
-                where: { yearId_month: { yearId, month } },
-                data: {
-                    expenseKwh: { increment: expenseKwh },
-                    pulse: (energyMonth.pulse ?? 0) + 1,
-                }
-            })
-        }
-
-        return energyMonth;
     },
 }

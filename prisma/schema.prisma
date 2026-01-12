@@ -60,7 +60,7 @@ model EnergyYear {
   id         Int           @id @default(autoincrement())
   year       Int
   expenseKwh Float?
-  account    Float?
+  account    Decimal?      @db.Decimal(10, 2)
   pulse      Int?
 
   user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -75,7 +75,7 @@ model EnergyMonth {
   id         Int        @id @default(autoincrement())
   month      Int
   expenseKwh Float?
-  account    Float?
+  account    Decimal?   @db.Decimal(10, 2)
   pulse      Int?
 
   year       EnergyYear @relation(fields: [yearId], references: [id], onDelete: Cascade)
@@ -90,7 +90,7 @@ model EnergyDay {
   id         Int          @id @default(autoincrement())
   day        Int
   expenseKwh Float?
-  account    Float?
+  account    Decimal?     @db.Decimal(10, 2)
   pulse      Int?
 
   month      EnergyMonth  @relation(fields: [monthId], references: [id], onDelete: Cascade)
@@ -105,7 +105,7 @@ model EnergyHour {
   id         Int       @id @default(autoincrement())
   hour       Int
   expenseKwh Float?
-  account    Float?
+  account    Decimal?  @db.Decimal(10, 2)
   pulse      Int?
 
   day        EnergyDay @relation(fields: [dayId], references: [id], onDelete: Cascade)

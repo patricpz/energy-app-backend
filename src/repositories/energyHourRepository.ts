@@ -1,4 +1,4 @@
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient, Prisma } from "../generated/prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -31,23 +31,23 @@ export const energyHourRepository = {
         })
     },
 
-    createOrUpdateHour: async (dayId: number, hour: number, expenseKwh: number) => {
-        let energyHour = await prisma.energyHour.findUnique({
-            where: { dayId_hour: { dayId, hour } }
-        })
-
-        if (!energyHour) {
-            energyHour = await prisma.energyHour.create({
-                data: { dayId, hour, pulse: 1, expenseKwh }
-            });
-        } else {
-            energyHour = await prisma.energyHour.update({
-                where: { id: energyHour.id },
-                data: {
-                    expenseKwh: { increment: expenseKwh },
-                    pulse: (energyHour.pulse ?? 0) + 1 
-                }
-            });
-        }
+    createOrUpdateHour: async (dayId: number, hour: number, expenseKwh: number, account: number) => {
+        return prisma.energyHour.upsert({
+            where: {
+                dayId_hour: { dayId, hour }
+            },
+            create: {
+                dayId, 
+                hour,
+                pulse: 1,
+                expenseKwh,
+                account: new Prisma.Decimal(account)
+            },
+            update: {
+                pulse: { increment: 1 },
+                expenseKwh: { increment: expenseKwh },
+                account: { increment: new Prisma.Decimal(account) }
+            }
+        });
     }
 }
