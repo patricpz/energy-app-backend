@@ -3,9 +3,9 @@ import { PrismaClient } from '../generated/prisma/client';
 const prisma = new PrismaClient();
 
 export const domesticEquipamentRepository = {
-    create: (userId: number, name: string, consumeKwh: number, model?: string) => {
+    create: (userId: number, name: string, consumeKwh: number, power: number, model?: string) => {
         return prisma.domesticEquipament.create({
-            data: { userId, name, consumeKwh, model }
+            data: { userId, name, consumeKwh, power, model, isTurnedOn: false }
         })
     },
 
@@ -23,6 +23,7 @@ export const domesticEquipamentRepository = {
             data: {
                 name: data.name,
                 consumeKwh: data.consumeKwh,
+                power: data.power,
                 model: data.model
             }
         })

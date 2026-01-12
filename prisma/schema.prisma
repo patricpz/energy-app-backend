@@ -50,6 +50,8 @@ model DomesticEquipament {
   name       String
   model      String?
   consumeKwh Float
+  power       Int      @default(0)
+  isTurnedOn  Boolean  @default(false)
   active     Boolean?
 
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
