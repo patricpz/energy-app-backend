@@ -4,9 +4,10 @@ import jwt from "jsonwebtoken";
 import { CreateUserDTO } from "../dtos/createUserDTO";
 import { LoginUserDTO } from "../dtos/loginUserDTO";
 import { addressRepository } from "../repositories/addressRepository";
+import { Prisma } from "../generated/prisma/client";
 
 export const userService = {
-  createUser: async ({ name, email, password, address, constantMedidor, ruralZone, whiteFare }: CreateUserDTO) => {
+  createUser: async ({ name, email, password, address, constantMedidor, ruralZone, whiteFare, cipValue }: CreateUserDTO) => {
     const exists = await userRepository.findByEmail(email);
     if (exists) throw new Error("Email already registered");
 
@@ -19,6 +20,7 @@ export const userService = {
       constantMedidor,
       ruralZone: ruralZone ?? false,
       whiteFare: whiteFare ?? false,
+      cipValue: cipValue ? new Prisma.Decimal(cipValue) : null,
     });
 
     if (address) {
