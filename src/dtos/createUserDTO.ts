@@ -1,3 +1,5 @@
+import { Prisma } from "../generated/prisma/client";
+
 export interface CreateUserDTO {
   name: string;
   email: string;
@@ -5,6 +7,7 @@ export interface CreateUserDTO {
   constantMedidor: number;
   ruralZone?: boolean;
   whiteFare?: boolean;
+  cipValue?: string;
   address?: {
     state: string;
     city: string;
