@@ -84,11 +84,39 @@ export const energyService = {
         return updatedHour;
     },
 
-    listEnergyHours: (userId: number, year: number, month: number, day: number) => energyHourRepository.findAllByUser(userId, year, month, day),
-
-    listEnergyDays: (userId: number, year: number, month: number) => energyDayRepository.findAllByUser(userId, year, month),
-
-    listEnergyMonths: (userId: number, year: number) => energyMonthRepository.findAllByUser(userId, year),
+    listEnergyHours: async (userId: number, year: number, month: number, day: number) => {
+        const data = await energyHourRepository.findAllByUser(userId, year, month, day);
+        
+        const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
+        const average = data.length > 0 ? total / data.length : 0;
     
-    listEnergyYears: (userId: number) => energyYearRepository.findAllByUser(userId),
-}
+        return { total, average, data };
+      },
+    
+      listEnergyDays: async (userId: number, year: number, month: number) => {
+        const data = await energyDayRepository.findAllByUser(userId, year, month);
+    
+        const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
+        const average = data.length > 0 ? total / data.length : 0;
+    
+        return { total, average, data };
+      },
+    
+      listEnergyMonths: async (userId: number, year: number) => {
+        const data = await energyMonthRepository.findAllByUser(userId, year);
+    
+        const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
+        const average = data.length > 0 ? total / data.length : 0;
+    
+        return { total, average, data };
+      },
+    
+      listEnergyYears: async (userId: number) => {
+        const data = await energyYearRepository.findAllByUser(userId);
+    
+        const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
+        const average = data.length > 0 ? total / data.length : 0;
+    
+        return { total, average, data };
+      }
+    };
