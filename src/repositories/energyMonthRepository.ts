@@ -13,7 +13,12 @@ export const energyMonthRepository = {
 
         return prisma.energyMonth.findMany({
             where: { yearId: energyYear.id },
-            orderBy: { month: "asc" }
+            orderBy: { month: "asc" },
+            include: {
+                days: {
+                    orderBy: { day: "asc" }
+                }
+            }
         });
     },
 
