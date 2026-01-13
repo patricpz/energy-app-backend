@@ -24,6 +24,30 @@ export const energyDayRepository = {
         });
     },
 
+    findToday: async (userId: number) => {
+        return await prisma.energyDay.findFirst({
+            where: { month: { year: { userId } } },
+            orderBy: [
+                { month: { year: { year: "desc" } } },
+                { month: { month: "desc" } },
+                { day: "desc" }
+            ],
+            select: {
+                id: true,
+                day: true,
+                expenseKwh: true,
+                hours: {
+                    orderBy: { hour: "asc" },
+                    select: {
+                        id: true,
+                        hour: true,
+                        expenseKwh: true,
+                    }
+                }
+            }
+        })
+    },
+
     createOrUpdateDay: async (monthId: number, day: number, expenseKwh: number, account: number) => {
         return prisma.energyDay.upsert({
             where: {

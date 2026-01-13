@@ -95,4 +95,19 @@ export const energyController = {
             return reply.code(500).send({ error: err.message });
         }
     },
+
+    relatoryToday: async ( req: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply ) => {
+        try {
+            const userId = Number(req.params.userId);
+            const loggerId = (req.user as any).userId;
+            if (userId !== loggerId) {
+                return reply.code(403).send({ error: "Unauthorized action" })
+            }
+
+            const today = await energyService.relatoryToday(userId);
+            return reply.send(today)
+        } catch (err: any) {
+            return reply.code(500).send({ error: err.message })
+        }
+    }
 };
