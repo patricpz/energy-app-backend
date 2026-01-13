@@ -91,32 +91,57 @@ export const energyService = {
         const average = data.length > 0 ? total / data.length : 0;
     
         return { total, average, data };
-      },
-    
-      listEnergyDays: async (userId: number, year: number, month: number) => {
-        const data = await energyDayRepository.findAllByUser(userId, year, month);
-    
-        const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
-        const average = data.length > 0 ? total / data.length : 0;
-    
-        return { total, average, data };
-      },
-    
-      listEnergyMonths: async (userId: number, year: number) => {
-        const data = await energyMonthRepository.findAllByUser(userId, year);
-    
-        const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
-        const average = data.length > 0 ? total / data.length : 0;
-    
-        return { total, average, data };
-      },
-    
-      listEnergyYears: async (userId: number) => {
-        const data = await energyYearRepository.findAllByUser(userId);
-    
-        const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
-        const average = data.length > 0 ? total / data.length : 0;
-    
-        return { total, average, data };
-      }
-    };
+    },
+
+    listEnergyDays: async (userId: number, year: number, month: number) => {
+    const data = await energyDayRepository.findAllByUser(userId, year, month);
+
+    const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
+    const average = data.length > 0 ? total / data.length : 0;
+
+    return { total, average, data };
+    },
+
+    listEnergyMonths: async (userId: number, year: number) => {
+    const data = await energyMonthRepository.findAllByUser(userId, year);
+
+    const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
+    const average = data.length > 0 ? total / data.length : 0;
+
+    return { total, average, data };
+    },
+
+    listEnergyYears: async (userId: number) => {
+    const data = await energyYearRepository.findAllByUser(userId);
+
+    const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
+    const average = data.length > 0 ? total / data.length : 0;
+
+    return { total, average, data };
+    },
+
+    relatoryToday: async (userId: number) => {
+        const today = await energyDayRepository.findToday(userId);
+        if (!today || !today.hours || today.hours.length === 0) {
+            return { totalKwh: today?.expenseKwh ?? 0, maxKwh: null, minKwh: null };
+        }
+
+        let maxKwh = today.hours[0];
+        let minKwh = today.hours[0];
+
+        for (const hour of today.hours) {
+            if ( hour.expenseKwh !== null && ( maxKwh.expenseKwh === null || hour.expenseKwh > maxKwh.expenseKwh ) ) {
+                maxKwh = hour;
+            }
+            if ( hour.expenseKwh !== null && ( minKwh.expenseKwh === null || hour.expenseKwh < minKwh.expenseKwh ) ) {
+                minKwh = hour;
+            }
+        }
+
+        return {
+            totalKwh: today.expenseKwh ?? 0,
+            maxKwh: maxKwh.expenseKwh,
+            minKwh: minKwh.expenseKwh
+        }
+    },
+};
