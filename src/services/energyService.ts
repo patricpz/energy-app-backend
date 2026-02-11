@@ -2,30 +2,15 @@ import { energyHourRepository } from "../repositories/energyHourRepository";
 import { energyDayRepository } from "../repositories/energyDayRepository";
 import { energyMonthRepository } from "../repositories/energyMonthRepository";
 import { energyYearRepository } from "../repositories/energyYearRepository";
-import { PrismaClient } from "../generated/prisma/client";
-import { calculateValuePulseService } from "./calculateValuePulseService";
+import { energyDistributorRepository } from "../repositories/energyDistributorRepository";
+import { PrismaClient, Prisma } from "../generated/prisma/client";
+import { calculateService } from "./calculateService";
 
 const prisma = new PrismaClient();
 
 export const energyService = {
 
-    lastPulseTimestamp: {} as Record<number, number>,
-
-    transformKwh(userId: number, medidorConstant: number = 3200): number {
-        const newTimestamp = Date.now();
-
-        if (!this.lastPulseTimestamp[userId]) {
-            this.lastPulseTimestamp[userId] = newTimestamp;
-            return 0;
-        }
-
-        const deltaSec = (newTimestamp - this.lastPulseTimestamp[userId]);
-        const watts = 3600000 / (deltaSec * medidorConstant);
-
-        this.lastPulseTimestamp[userId] = newTimestamp;
-
-        return watts;
-    },  
+    //lastPulseTimestamp: {} as Record<number, number>,
 
     async registerPulse(userId: number, timestamp?: string) {
         const now = timestamp ? new Date(timestamp) : new Date();
@@ -44,48 +29,23 @@ export const energyService = {
         }
 
         const constant = user.constantMedidor ?? 3200;
-        const expenseKwh = 1 / constant;
-        const possibleKwh = this.transformKwh(userId, constant);
+        const expenseKwh = new Prisma.Decimal(1).div(constant);
+        //const possibleKwh = calculateService.calculateImediateWtt(userId, constant, this.lastPulseTimestamp);
 
-        const tariff = await prisma.energyTariff.findFirst({
-            where: {
-                distributor: { state: user.address?.state },
-                startDate: { lte: now },
-                OR: [{ endDate: null }, { endDate: { gte: now } }],
-            },
-            orderBy: { startDate: "desc" }
-        });
-        const icms = await prisma.icmsRate.findFirst({
-            where: {
-                state: user.address?.state,
-                consumerType: user.ruralZone ? "RURAL" : "RESIDENCIAL",
-                minKwh: { lte: expenseKwh },
-                OR: [{ maxKwh: null }, { maxKwh: { gte: expenseKwh } }],
-            }
-        });
-        const flag = await prisma.tariffFlag.findFirst({
-            where: { year, month }
-        });
-        const cip = user.cipValue ? Number(user.cipValue) / 30 / 24 / constant : 0;
-        const pulseValue = calculateValuePulseService.calculatePulseValue({
-            kwh: expenseKwh,
-            te: Number(tariff?.te ?? 0),
-            tusd: Number(tariff?.tusd ?? 0),
-            flag: flag?.additionalKwh ?? 0,
-            icms: icms?.rate ?? 0,
-            cip
-        })
+        const pulseValue = await calculateService.CalculatePulse(user, userId, expenseKwh, constant, now, year, month);
 
-        const energyYear = await energyYearRepository.createOrUpdateYear(userId, year, expenseKwh, pulseValue);
-        const energyMonth = await energyMonthRepository.createOrUpdateMonth(energyYear.id, month, expenseKwh, pulseValue);
-        const energyDay = await energyDayRepository.createOrUpdateDay(energyMonth.id, day, expenseKwh, pulseValue);
-        const updatedHour = await energyHourRepository.createOrUpdateHour(energyDay.id, hour, expenseKwh, pulseValue);
+        return prisma.$transaction(async (tx) => {
+            const energyYear = await energyYearRepository.createOrUpdateYear(tx, userId, year, new Prisma.Decimal(expenseKwh), new Prisma.Decimal(pulseValue));
+            const energyMonth = await energyMonthRepository.createOrUpdateMonth(tx, energyYear.id, month, new Prisma.Decimal(expenseKwh), new Prisma.Decimal(pulseValue));
+            const energyDay = await energyDayRepository.createOrUpdateDay(tx, energyMonth.id, day, new Prisma.Decimal(expenseKwh), new Prisma.Decimal(pulseValue));
+            const updatedHour = await energyHourRepository.createOrUpdateHour(tx, energyDay.id, hour, new Prisma.Decimal(expenseKwh), new Prisma.Decimal(pulseValue));
 
-        return updatedHour;
+            return updatedHour;
+        });
     },
 
     listEnergyHours: async (userId: number, year: number, month: number, day: number) => {
-        const data = await energyHourRepository.findAllByUser(userId, year, month, day);
+        const data = await energyHourRepository.findAllByUser(prisma, userId, year, month, day);
         
         const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
         const average = data.length > 0 ? total / data.length : 0;
@@ -94,34 +54,34 @@ export const energyService = {
     },
 
     listEnergyDays: async (userId: number, year: number, month: number) => {
-    const data = await energyDayRepository.findAllByUser(userId, year, month);
+        const data = await energyDayRepository.findAllByUser(prisma, userId, year, month);
 
-    const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
-    const average = data.length > 0 ? total / data.length : 0;
+        const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
+        const average = data.length > 0 ? total / data.length : 0;
 
-    return { total, average, data };
+        return { total, average, data };
     },
 
     listEnergyMonths: async (userId: number, year: number) => {
-    const data = await energyMonthRepository.findAllByUser(userId, year);
+        const data = await energyMonthRepository.findAllByUser(prisma, userId, year);
 
-    const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
-    const average = data.length > 0 ? total / data.length : 0;
+        const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
+        const average = data.length > 0 ? total / data.length : 0;
 
-    return { total, average, data };
+        return { total, average, data };
     },
 
     listEnergyYears: async (userId: number) => {
-    const data = await energyYearRepository.findAllByUser(userId);
+        const data = await energyYearRepository.findAllByUser(prisma, userId);
 
-    const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
-    const average = data.length > 0 ? total / data.length : 0;
+        const total = data.reduce((acc, item) => acc + (Number(item.expenseKwh) || 0), 0);
+        const average = data.length > 0 ? total / data.length : 0;
 
-    return { total, average, data };
+        return { total, average, data };
     },
 
     relatoryToday: async (userId: number) => {
-        const today = await energyDayRepository.findToday(userId);
+        const today = await energyDayRepository.findToday(prisma, userId);
         if (!today || !today.hours || today.hours.length === 0) {
             return { totalKwh: today?.expenseKwh ?? 0, maxKwh: null, minKwh: null };
         }
@@ -144,4 +104,6 @@ export const energyService = {
             minKwh: minKwh.expenseKwh
         }
     },
+
+    listEnergyDistributor: async () => await energyDistributorRepository.findAll(),
 };

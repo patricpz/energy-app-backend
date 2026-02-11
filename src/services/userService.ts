@@ -7,9 +7,12 @@ import { addressRepository } from "../repositories/addressRepository";
 import { Prisma } from "../generated/prisma/client";
 
 export const userService = {
-  createUser: async ({ name, email, password, address, constantMedidor, ruralZone, whiteFare, cipValue }: CreateUserDTO) => {
+  createUser: async ({ name, email, password, address, constantMedidor, ruralZone, whiteFare, cipValue, energyDistributorId }: CreateUserDTO) => {
     const exists = await userRepository.findByEmail(email);
+    
     if (exists) throw new Error("Email already registered");
+    if (!energyDistributorId) throw new Error("User not energy distributor");
+    if (!address) throw new Error("User not address");
 
     const hashed = await bcrypt.hash(password, 10);
 
@@ -18,6 +21,7 @@ export const userService = {
       email,
       password: hashed,
       constantMedidor,
+      energyDistributorId,
       ruralZone: ruralZone ?? false,
       whiteFare: whiteFare ?? false,
       cipValue: cipValue ? new Prisma.Decimal(cipValue) : null,
@@ -33,8 +37,7 @@ export const userService = {
         number: address.number,
         complement: address.complement,
         userId: newUser.id,
-      })
-
+      });
     }
 
     return newUser;

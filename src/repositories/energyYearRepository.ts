@@ -1,9 +1,9 @@
 import { PrismaClient, Prisma } from "../generated/prisma/client";
 
-const prisma = new PrismaClient();
+type PrismaOrTx = PrismaClient | Prisma.TransactionClient;
 
 export const energyYearRepository = {
-    findAllByUser: (userId: number) => {
+    findAllByUser: (prisma: PrismaOrTx, userId: number) => {
         return prisma.energyYear.findMany({
             where: {
                 userId: userId
@@ -11,7 +11,7 @@ export const energyYearRepository = {
         });
     },
     
-    createOrUpdateYear: async (userId: number, year: number, expenseKwh: number, account: number) => {
+    createOrUpdateYear: async (prisma: PrismaOrTx, userId: number, year: number, expenseKwh: Prisma.Decimal, account: Prisma.Decimal) => {
         return prisma.energyYear.upsert({
             where: {
                 userId_year: { userId, year }
@@ -21,12 +21,12 @@ export const energyYearRepository = {
                 year,
                 pulse: 1,
                 expenseKwh,
-                account: new Prisma.Decimal(account)
+                account
             },
             update: {
                 pulse: { increment: 1 },
                 expenseKwh: { increment: expenseKwh },
-                account: { increment: new Prisma.Decimal(account) }
+                account: { increment: account }
             }
         });
     }

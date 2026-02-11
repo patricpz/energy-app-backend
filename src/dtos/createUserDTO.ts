@@ -5,6 +5,7 @@ export interface CreateUserDTO {
   email: string;
   password: string;
   constantMedidor: number;
+  energyDistributorId: number;
   ruralZone?: boolean;
   whiteFare?: boolean;
   cipValue?: string;
