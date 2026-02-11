@@ -25,6 +25,9 @@ model User {
   whiteFare           Boolean              @default(false)
   cipValue            Decimal?             @db.Decimal(10, 2)
 
+  energyDistributorId Int
+  energyDistributor   EnergyDistributor    @relation(fields: [energyDistributorId], references: [id])
+
   address             Address?
 
   energyYears         EnergyYear[]
@@ -36,7 +39,7 @@ model Address {
   state      String  @db.Char(2)
   city       String
   zipCode    String  @db.VarChar(9)
-  district   String
+  district   String7
   street     String
   number     String
   complement String?
@@ -59,7 +62,7 @@ model DomesticEquipament {
 model EnergyYear {
   id         Int           @id @default(autoincrement())
   year       Int
-  expenseKwh Float?
+  expenseKwh Decimal?      @db.Decimal(10, 4)
   account    Decimal?      @db.Decimal(10, 2)
   pulse      Int?
 
@@ -74,7 +77,7 @@ model EnergyYear {
 model EnergyMonth {
   id         Int        @id @default(autoincrement())
   month      Int
-  expenseKwh Float?
+  expenseKwh Decimal?   @db.Decimal(10, 4)
   account    Decimal?   @db.Decimal(10, 2)
   pulse      Int?
 
@@ -89,7 +92,7 @@ model EnergyMonth {
 model EnergyDay {
   id         Int          @id @default(autoincrement())
   day        Int
-  expenseKwh Float?
+  expenseKwh Decimal?     @db.Decimal(10, 4)
   account    Decimal?     @db.Decimal(10, 2)
   pulse      Int?
 
@@ -104,7 +107,7 @@ model EnergyDay {
 model EnergyHour {
   id         Int       @id @default(autoincrement())
   hour       Int
-  expenseKwh Float?
+  expenseKwh Decimal?  @db.Decimal(10, 4)
   account    Decimal?  @db.Decimal(10, 2)
   pulse      Int?
 
@@ -121,6 +124,7 @@ model EnergyDistributor {
   state   String         @db.Char(2)
   cnpj    String
 
+  users   User[]
   tariffs EnergyTariff[]
 }
 
@@ -158,9 +162,9 @@ model IcmsRate {
   id           Int      @id @default(autoincrement())
   state        String   @db.Char(2)
   consumerType String
-  minKwh       Float
-  maxKwh       Float?
-  rate         Float
+  minKwh       Decimal  @db.Decimal(10, 4)
+  maxKwh       Decimal? @db.Decimal(10, 4)
+  rate         Decimal  @db.Decimal(5, 4)
   createdAt    DateTime @default(now())
 
   @@index([state, consumerType])

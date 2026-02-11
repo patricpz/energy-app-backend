@@ -1,9 +1,9 @@
 import { PrismaClient, Prisma } from "../generated/prisma/client";
 
-const prisma = new PrismaClient();
+type PrismaOrTx = PrismaClient | Prisma.TransactionClient;
 
 export const energyHourRepository = {
-    findAllByUser: async (userId: number, year: number, month: number, day: number) => {
+    findAllByUser: async (prisma: PrismaOrTx, userId: number, year: number, month: number, day: number) => {
         const energyYear = await prisma.energyYear.findUnique({
             where: { userId_year: { userId, year } },
             select: { id: true }
@@ -31,7 +31,7 @@ export const energyHourRepository = {
         })
     },
 
-    createOrUpdateHour: async (dayId: number, hour: number, expenseKwh: number, account: number) => {
+    createOrUpdateHour: async (prisma: PrismaOrTx, dayId: number, hour: number, expenseKwh: Prisma.Decimal, account: Prisma.Decimal) => {
         return prisma.energyHour.upsert({
             where: {
                 dayId_hour: { dayId, hour }
@@ -41,12 +41,12 @@ export const energyHourRepository = {
                 hour,
                 pulse: 1,
                 expenseKwh,
-                account: new Prisma.Decimal(account)
+                account
             },
             update: {
                 pulse: { increment: 1 },
                 expenseKwh: { increment: expenseKwh },
-                account: { increment: new Prisma.Decimal(account) }
+                account: { increment: account }
             }
         });
     }

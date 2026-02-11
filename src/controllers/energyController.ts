@@ -109,5 +109,13 @@ export const energyController = {
         } catch (err: any) {
             return reply.code(500).send({ error: err.message })
         }
-    }
+    },
+
+    listEnergyDistributor: async ( _: FastifyRequest, reply: FastifyReply ) => {
+        try {
+            return await energyService.listEnergyDistributor();
+        } catch (err: any) {
+            return reply.code(500).send({ error: err.message });
+        }
+    },
 };
