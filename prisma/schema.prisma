@@ -39,7 +39,7 @@ model Address {
   state      String  @db.Char(2)
   city       String
   zipCode    String  @db.VarChar(9)
-  district   String7
+  district   String
   street     String
   number     String
   complement String?
