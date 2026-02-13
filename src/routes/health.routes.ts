@@ -5,6 +5,8 @@ import { healthController } from '../controllers/health.controller';
 export const healthRoutes = async (app: FastifyInstance) => {
   app.get('/', {
     schema: {
+      tags: ['System'],
+      summary: 'Health check da API',
       response: {
         200: {
           type: 'object',

@@ -26,6 +26,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@fastify/swagger": "^8.15.0",
+    "@fastify/swagger-ui": "^1.10.2",
     "@fastify/websocket": "^8.3.1",
     "@prisma/client": "^6.19.0",
     "bcrypt": "^6.0.0",
