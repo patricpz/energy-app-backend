@@ -8,6 +8,7 @@ export interface CreateUserDTO {
   energyDistributorId: number;
   ruralZone?: boolean;
   whiteFare?: boolean;
+  tsee?: boolean;
   cipValue?: string;
   address?: {
     state: string;

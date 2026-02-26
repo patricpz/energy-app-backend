@@ -23,6 +23,7 @@ model User {
   constantMedidor     Int?
   ruralZone           Boolean              @default(false)
   whiteFare           Boolean              @default(false)
+  tsee                Boolean              @default(false)
   cipValue            Decimal?             @db.Decimal(10, 2)
 
   energyDistributorId Int

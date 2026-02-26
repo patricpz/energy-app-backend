@@ -25,6 +25,7 @@ export const calculateService = {
     CalculatePulse: async (
         user: UserWithAddress,
         userId: number, 
+        monthKwh: Prisma.Decimal,
         expenseKwh: Prisma.Decimal,
         constant: number,
         now: Date,
@@ -65,12 +66,13 @@ export const calculateService = {
         const cip = user.cipValue ? user.cipValue.div(30).div(24).div(constant) : new Prisma.Decimal(0);
 
         const pulseValue = calculatePulseValue({
+            monthKwh,
             kwh: expenseKwh,
             te: tariff?.te ?? new Prisma.Decimal(0),
             tusd: tariff?.tusd ?? new Prisma.Decimal(0),
             flag: new Prisma.Decimal(flag?.additionalKwh ?? 0),
             icms: icms?.rate ?? new Prisma.Decimal(0),
-            cip
+            tsee: user.tsee
         });
 
         return pulseValue;
