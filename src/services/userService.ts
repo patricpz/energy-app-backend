@@ -7,7 +7,7 @@ import { addressRepository } from "../repositories/addressRepository";
 import { Prisma } from "../generated/prisma/client";
 
 export const userService = {
-  createUser: async ({ name, email, password, address, constantMedidor, ruralZone, whiteFare, cipValue, energyDistributorId }: CreateUserDTO) => {
+  createUser: async ({ name, email, password, address, constantMedidor, ruralZone, whiteFare, tsee, cipValue, energyDistributorId }: CreateUserDTO) => {
     const exists = await userRepository.findByEmail(email);
     
     if (exists) throw new Error("Email already registered");
@@ -24,6 +24,7 @@ export const userService = {
       energyDistributorId,
       ruralZone: ruralZone ?? false,
       whiteFare: whiteFare ?? false,
+      tsee: tsee ?? false,
       cipValue: cipValue ? new Prisma.Decimal(cipValue) : null,
     });
 

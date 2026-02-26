@@ -32,7 +32,13 @@ export const energyService = {
         const expenseKwh = new Prisma.Decimal(1).div(constant);
         //const possibleKwh = calculateService.calculateImediateWtt(userId, constant, this.lastPulseTimestamp);
 
-        const pulseValue = await calculateService.CalculatePulse(user, userId, expenseKwh, constant, now, year, month);
+        let monthKwh = new Prisma.Decimal(0);
+        const currentYear = await prisma.energyYear.findFirst({where: {userId, year}});
+        if (currentYear) {
+            const currentMonth = await prisma.energyMonth.findFirst({where: {yearId: currentYear.id, month}});
+            monthKwh = currentMonth?.expenseKwh ?? new Prisma.Decimal(0);
+        }
+        const pulseValue = await calculateService.CalculatePulse(user, userId, monthKwh, expenseKwh, constant, now, year, month);
 
         return prisma.$transaction(async (tx) => {
             const energyYear = await energyYearRepository.createOrUpdateYear(tx, userId, year, new Prisma.Decimal(expenseKwh), new Prisma.Decimal(pulseValue));
